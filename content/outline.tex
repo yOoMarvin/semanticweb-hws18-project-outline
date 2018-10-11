@@ -14,6 +14,19 @@ In the end, the user can visit the web application where he/she sees a map of a 
 
 \section{Techniques}
 
+From a user's perspective the application goal can be realized in two different ways. (1) Regional districts are getting clustered by their type of public institutions or (2) the user searches for a generic type of institutions and an algorithm searches on-the-fly for regions with a high density of those. Technically, both scenarios rely on similar computations. The main idea is to divide a given region into static squares and calculate for each square the density of public institution types. In the end, a square is labeled with the most occuring institution-type. In more detail, two questions must be clarified beforehand: (1) What is the best size of a square? (2) Due to the non-unique naming assumption, similar institution types might be called similarly. For question (1) experimental setups will clarify the best square size. Mannheim will be used as a reference for evaluating the adequacy of the classification. For question (2), reasoning techniques will help finding enough overlap. The assumption is that public institutions are categorized in the datasets. Those categories follow some kind of an ontology. For instance the University of Mannheim is of type \"EducationalInstitution\", \"University\" and \"Organisation\" in the DBPedia-ontology. For the labeling, each type in the entire ontology must be considered and wherever the largest overlap within a square is found, is then outputted. However, very general types will be very frequent. So the algorithm has to penalize general types like organization and prefer to label squares with deeper nested labels like \"University\". This preference is a threshold that must be experimentally optimized as well. In a later stage of the project, one could replace the predefined squares with arbitrarily shaped clusters using a DBScan algorithm. However, that is just a nice-to-have addition. In the end the outcome will always be small regions with labels depending on the type of institutions. With that information foreign travellers can easily find their way through cities and districts. 
+
+
 \section{Evaluation}
+
+The evaluation for this use case is quite subjective. That is why there is no atomic performance measurement available. The assessment of this project will be done in two ways. First of all, manual spot checks for the region of Mannheim and Heidelberg will be done. The project team is quite familiar to the characteristics of districts in Mannheim and Heidelberg. So some plausibility checks can be done that way. In order to objective the evaluation a bit further, a fitness measure based on the deepness of the cluster-labels in the DBPedia and LinkedOpenData ontology will be introduced. This measure is meant to penalize very general labels like institution. This measure can be further combined with a penalization for very heterogeneous or homogeneous regions, where each square is labeled differently or similar. An example fitness function can look like this:
+
+\[d_i = deepness~of~current~cluster~label \]
+\[d = deepest~label~in~ontology \]
+\[o_i = current~cluster~size \]
+\[o = optimal~cluster~size \]
+\[I = set~of~squares \]
+
+\[\sum_{i=0}^{|I|} 0.5 * \frac{d_i}{d} + 0.5 * \frac{1}{ o - o_i }\]
 
 
